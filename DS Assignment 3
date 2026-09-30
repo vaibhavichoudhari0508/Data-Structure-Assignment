@@ -1,0 +1,104 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+struct Product
+{
+    int id;
+    string name;
+    string category;
+    float price;
+    int quantity;
+    string expiry;
+};
+
+int main()
+{
+    Product p[50];
+    int n, choice;
+
+    cout << "Enter number of products: ";
+    cin >> n;
+
+    // Input product details
+    for (int i = 0; i < n; i++)
+    {
+        cout << "\nEnter details of Product " << i + 1 << endl;
+
+        cout << "Product ID: ";
+        cin >> p[i].id;
+
+        cout << "Product Name: ";
+        cin >> p[i].name;
+
+        cout << "Category: ";
+        cin >> p[i].category;
+
+        cout << "Price: ";
+        cin >> p[i].price;
+
+        cout << "Quantity: ";
+        cin >> p[i].quantity;
+
+        cout << "Expiry Date: ";
+        cin >> p[i].expiry;
+    }
+
+    // Display products
+    cout << "\n\n--- PRODUCT DETAILS ---\n";
+
+    for (int i = 0; i < n; i++)
+    {
+        cout << "\nID: " << p[i].id;
+        cout << "\nName: " << p[i].name;
+        cout << "\nCategory: " << p[i].category;
+        cout << "\nPrice: " << p[i].price;
+        cout << "\nQuantity: " << p[i].quantity;
+        cout << "\nExpiry: " << p[i].expiry << endl;
+    }
+
+    // Search by Product ID
+    int searchID;
+    cout << "\nEnter Product ID to search: ";
+    cin >> searchID;
+
+    bool found = false;
+
+    for (int i = 0; i < n; i++)
+    {
+        if (p[i].id == searchID)
+        {
+            cout << "\nProduct Found!";
+            cout << "\nName: " << p[i].name;
+            cout << "\nPrice: " << p[i].price;
+            cout << "\nQuantity: " << p[i].quantity;
+            found = true;
+        }
+    }
+
+    if (!found)
+        cout << "\nProduct not found.";
+
+    // Sort by Price
+    for (int i = 0; i < n - 1; i++)
+    {
+        for (int j = 0; j < n - i - 1; j++)
+        {
+            if (p[j].price > p[j + 1].price)
+            {
+                Product temp = p[j];
+                p[j] = p[j + 1];
+                p[j + 1] = temp;
+            }
+        }
+    }
+
+    cout << "\n\n--- PRODUCTS SORTED BY PRICE ---\n";
+
+    for (int i = 0; i < n; i++)
+    {
+        cout << p[i].name << " - Rs." << p[i].price << endl;
+    }
+
+    return 0;
+}
