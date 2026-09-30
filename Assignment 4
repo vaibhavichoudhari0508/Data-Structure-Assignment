@@ -1,0 +1,182 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+#define MAX 10
+
+// Queue for normal calls
+string callQueue[MAX];
+int front = -1;
+int rear = -1;
+
+// Stack for resolved calls
+string callStack[MAX];
+int top = -1;
+
+// Add call to Queue
+void addCall(string name)
+{
+    if (rear == MAX - 1)
+    {
+        cout << "Queue is full!\n";
+    }
+    else
+    {
+        if (front == -1)
+            front = 0;
+
+        rear++;
+        callQueue[rear] = name;
+
+        cout << "Call added successfully.\n";
+    }
+}
+
+// Process call from Queue
+void processCall()
+{
+    if (front == -1 || front > rear)
+    {
+        cout << "No calls waiting.\n";
+    }
+    else
+    {
+        string name = callQueue[front];
+
+        cout << "Processing call of: " << name << endl;
+
+        // Store resolved call in Stack
+        if (top < MAX - 1)
+        {
+            top++;
+            callStack[top] = name;
+        }
+
+        front++;
+    }
+}
+
+// Add urgent call
+void urgentCall(string name)
+{
+    cout << "Urgent call from " << name << " is handled first.\n";
+
+    // Store in stack after resolving
+    if (top < MAX - 1)
+    {
+        top++;
+        callStack[top] = name;
+    }
+}
+
+// Display recently resolved calls
+void showHistory()
+{
+    if (top == -1)
+    {
+        cout << "No resolved calls.\n";
+    }
+    else
+    {
+        cout << "\n--- RECENTLY RESOLVED CALLS ---\n";
+
+        for (int i = top; i >= 0; i--)
+        {
+            cout << callStack[i] << endl;
+        }
+    }
+}
+
+// Recursive IVR menu
+void IVR()
+{
+    int choice;
+
+    cout << "\n--- IVR MENU ---\n";
+    cout << "1. Technical Support\n";
+    cout << "2. Billing Support\n";
+    cout << "3. General Information\n";
+    cout << "4. Exit IVR\n";
+
+    cout << "Enter choice: ";
+    cin >> choice;
+
+    if (choice == 4)
+    {
+        cout << "Exiting IVR...\n";
+        return;
+    }
+
+    if (choice == 1)
+        cout << "Connecting to Technical Support...\n";
+
+    else if (choice == 2)
+        cout << "Connecting to Billing Support...\n";
+
+    else if (choice == 3)
+        cout << "Connecting to General Information...\n";
+
+    else
+        cout << "Invalid choice.\n";
+
+    // Recursion
+    if (choice != 4)
+        IVR();
+}
+
+int main()
+{
+    int choice;
+    string name;
+
+    do
+    {
+        cout << "\n===== CUSTOMER SERVICE SYSTEM =====\n";
+        cout << "1. Add Normal Call\n";
+        cout << "2. Process Normal Call\n";
+        cout << "3. Add Urgent Call\n";
+        cout << "4. Show Call History\n";
+        cout << "5. Open IVR Menu\n";
+        cout << "6. Exit\n";
+
+        cout << "Enter choice: ";
+        cin >> choice;
+
+        switch (choice)
+        {
+        case 1:
+            cout << "Enter customer name: ";
+            cin >> name;
+            addCall(name);
+            break;
+
+        case 2:
+            processCall();
+            break;
+
+        case 3:
+            cout << "Enter urgent customer name: ";
+            cin >> name;
+            urgentCall(name);
+            break;
+
+        case 4:
+            showHistory();
+            break;
+
+        case 5:
+            IVR();
+            break;
+
+        case 6:
+            cout << "Program ended.\n";
+            break;
+
+        default:
+            cout << "Invalid choice.\n";
+        }
+
+    } while (choice != 6);
+
+    return 0;
+}
