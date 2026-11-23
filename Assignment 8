@@ -1,0 +1,144 @@
+
+#include <iostream>
+#include <list>
+#include <vector>
+using namespace std;
+
+struct Product {
+    int id;
+    string name;
+    float price;
+    int quantity;
+};
+
+list<Product> products;
+vector<list<int>> hashTable(10);
+
+int hashFunction(int id) {
+    return id % 10;
+}
+
+void addProduct() {
+    Product p;
+
+    cout << "Enter Product ID: ";
+    cin >> p.id;
+
+    for (auto x : products) {
+        if (x.id == p.id) {
+            cout << "Product ID already exists!\n";
+            return;
+        }
+    }
+
+    cout << "Enter Product Name: ";
+    cin >> p.name;
+    cout << "Enter Price: ";
+    cin >> p.price;
+    cout << "Enter Quantity: ";
+    cin >> p.quantity;
+
+    products.push_back(p);
+    hashTable[hashFunction(p.id)].push_back(p.id);
+
+    cout << "Product added successfully!\n";
+}
+
+void searchProduct() {
+    int id;
+    cout << "Enter Product ID: ";
+    cin >> id;
+
+    for (int x : hashTable[hashFunction(id)]) {
+        if (x == id) {
+            for (auto p : products) {
+                if (p.id == id) {
+                    cout << "\nName: " << p.name
+                         << "\nPrice: " << p.price
+                         << "\nQuantity: " << p.quantity << endl;
+                    return;
+                }
+            }
+        }
+    }
+    cout << "Product not found!\n";
+}
+
+void updateProduct() {
+    int id;
+    cout << "Enter Product ID: ";
+    cin >> id;
+
+    for (auto &p : products) {
+        if (p.id == id) {
+            cout << "Enter New Name: ";
+            cin >> p.name;
+            cout << "Enter New Price: ";
+            cin >> p.price;
+            cout << "Enter New Quantity: ";
+            cin >> p.quantity;
+
+            cout << "Product updated!\n";
+            return;
+        }
+    }
+    cout << "Product not found!\n";
+}
+
+void removeProduct() {
+    int id;
+    cout << "Enter Product ID: ";
+    cin >> id;
+
+    for (auto it = products.begin(); it != products.end(); it++) {
+        if (it->id == id) {
+            products.erase(it);
+            hashTable[hashFunction(id)].remove(id);
+            cout << "Product removed!\n";
+            return;
+        }
+    }
+    cout << "Product not found!\n";
+}
+
+void displayProducts() {
+    if (products.empty()) {
+        cout << "No products available!\n";
+        return;
+    }
+
+    for (auto p : products) {
+        cout << "\nID: " << p.id
+             << "\nName: " << p.name
+             << "\nPrice: " << p.price
+             << "\nQuantity: " << p.quantity << endl;
+    }
+}
+
+int main() {
+    int choice;
+
+    do {
+        cout << "\n--- E-COMMERCE INVENTORY ---";
+        cout << "\n1. Add Product";
+        cout << "\n2. Update Product";
+        cout << "\n3. Remove Product";
+        cout << "\n4. Display Products";
+        cout << "\n5. Search Product";
+        cout << "\n0. Exit";
+        cout << "\nEnter choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1: addProduct(); break;
+            case 2: updateProduct(); break;
+            case 3: removeProduct(); break;
+            case 4: displayProducts(); break;
+            case 5: searchProduct(); break;
+            case 0: cout << "Exiting..."; break;
+            default: cout << "Invalid choice!";
+        }
+    } while (choice != 0);
+
+    return 0;
+}
