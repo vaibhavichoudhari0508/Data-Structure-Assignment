@@ -1,0 +1,147 @@
+
+#include <iostream>
+#include <list>
+#include <vector>
+using namespace std;
+
+struct Patient {
+    int id;
+    string name;
+    int age;
+    string disease;
+};
+
+list<Patient> patients;
+vector<list<int>> hashTable(10);
+
+int hashFunction(int id) {
+    return id % 10;
+}
+
+void registerPatient() {
+    Patient p;
+    cout << "Enter Patient ID: ";
+    cin >> p.id;
+
+    for (auto x : patients) {
+        if (x.id == p.id) {
+            cout << "Patient ID already exists!\n";
+            return;
+        }
+    }
+
+    cout << "Enter Name: ";
+    cin >> p.name;
+    cout << "Enter Age: ";
+    cin >> p.age;
+    cout << "Enter Disease: ";
+    cin >> p.disease;
+
+    patients.push_back(p);
+    hashTable[hashFunction(p.id)].push_back(p.id);
+
+    cout << "Patient registered successfully!\n";
+}
+
+void searchPatient() {
+    int id;
+    cout << "Enter Patient ID: ";
+    cin >> id;
+
+    int index = hashFunction(id);
+
+    for (int x : hashTable[index]) {
+        if (x == id) {
+            for (auto p : patients) {
+                if (p.id == id) {
+                    cout << "Name: " << p.name
+                         << "\nAge: " << p.age
+                         << "\nDisease: " << p.disease << endl;
+                    return;
+                }
+            }
+        }
+    }
+    cout << "Patient not found!\n";
+}
+
+void updatePatient() {
+    int id;
+    cout << "Enter Patient ID: ";
+    cin >> id;
+
+    for (auto &p : patients) {
+        if (p.id == id) {
+            cout << "Enter New Name: ";
+            cin >> p.name;
+            cout << "Enter New Age: ";
+            cin >> p.age;
+            cout << "Enter New Disease: ";
+            cin >> p.disease;
+            cout << "Patient updated!\n";
+            return;
+        }
+    }
+    cout << "Patient not found!\n";
+}
+
+void dischargePatient() {
+    int id;
+    cout << "Enter Patient ID: ";
+    cin >> id;
+
+    for (auto it = patients.begin(); it != patients.end(); it++) {
+        if (it->id == id) {
+            patients.erase(it);
+
+            int index = hashFunction(id);
+            hashTable[index].remove(id);
+
+            cout << "Patient discharged!\n";
+            return;
+        }
+    }
+    cout << "Patient not found!\n";
+}
+
+void displayPatients() {
+    if (patients.empty()) {
+        cout << "No patient records available.\n";
+        return;
+    }
+
+    for (auto p : patients) {
+        cout << "\nID: " << p.id
+             << "\nName: " << p.name
+             << "\nAge: " << p.age
+             << "\nDisease: " << p.disease << endl;
+    }
+}
+
+int main() {
+    int choice;
+
+    do {
+        cout << "\n--- HOSPITAL MANAGEMENT ---";
+        cout << "\n1. Register Patient";
+        cout << "\n2. Update Patient";
+        cout << "\n3. Discharge Patient";
+        cout << "\n4. Display Patients";
+        cout << "\n5. Search Patient";
+        cout << "\n0. Exit";
+        cout << "\nEnter choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1: registerPatient(); break;
+            case 2: updatePatient(); break;
+            case 3: dischargePatient(); break;
+            case 4: displayPatients(); break;
+            case 5: searchPatient(); break;
+            case 0: cout << "Exiting..."; break;
+            default: cout << "Invalid choice!";
+        }
+    } while (choice != 0);
+
+    return 0;
+}
