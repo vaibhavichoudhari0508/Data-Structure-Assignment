@@ -1,0 +1,243 @@
+
+#include <iostream>
+#include <queue>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+// Directory Tree
+struct Folder {
+    string name;
+    vector<Folder*> children;
+
+    Folder(string n) {
+        name = n;
+    }
+};
+
+void createFolder(Folder* root, string name) {
+    root->children.push_back(new Folder(name));
+    cout << "Folder created!\n";
+}
+
+void displayTree(Folder* root, int level = 0) {
+    for (int i = 0; i < level; i++)
+        cout << "  ";
+
+    cout << root->name << endl;
+
+    for (auto child : root->children)
+        displayTree(child, level + 1);
+}
+
+bool searchFolder(Folder* root, string name) {
+    if (root->name == name)
+        return true;
+
+    for (auto child : root->children) {
+        if (searchFolder(child, name))
+            return true;
+    }
+    return false;
+}
+
+bool deleteFolder(Folder* root, string name) {
+    for (auto it = root->children.begin();
+         it != root->children.end(); it++) {
+
+        if ((*it)->name == name) {
+            delete *it;
+            root->children.erase(it);
+            return true;
+        }
+
+        if (deleteFolder(*it, name))
+            return true;
+    }
+    return false;
+}
+
+// Binary Search Tree for Files
+struct File {
+    string name;
+    File *left, *right;
+
+    File(string n) {
+        name = n;
+        left = right = NULL;
+    }
+};
+
+File* insertFile(File* root, string name) {
+    if (root == NULL)
+        return new File(name);
+
+    if (name < root->name)
+        root->left = insertFile(root->left, name);
+    else if (name > root->name)
+        root->right = insertFile(root->right, name);
+
+    return root;
+}
+
+bool searchFile(File* root, string name) {
+    if (root == NULL)
+        return false;
+
+    if (root->name == name)
+        return true;
+
+    if (name < root->name)
+        return searchFile(root->left, name);
+
+    return searchFile(root->right, name);
+}
+
+void preorder(File* root) {
+    if (root == NULL) return;
+
+    cout << root->name << " ";
+    preorder(root->left);
+    preorder(root->right);
+}
+
+void inorder(File* root) {
+    if (root == NULL) return;
+
+    inorder(root->left);
+    cout << root->name << " ";
+    inorder(root->right);
+}
+
+void postorder(File* root) {
+    if (root == NULL) return;
+
+    postorder(root->left);
+    postorder(root->right);
+    cout << root->name << " ";
+}
+
+void levelorder(File* root) {
+    if (root == NULL) return;
+
+    queue<File*> q;
+    q.push(root);
+
+    while (!q.empty()) {
+        File* temp = q.front();
+        q.pop();
+
+        cout << temp->name << " ";
+
+        if (temp->left) q.push(temp->left);
+        if (temp->right) q.push(temp->right);
+    }
+}
+
+// Max Heap for Priority Tasks
+priority_queue<int> tasks;
+
+int main() {
+    Folder* root = new Folder("Root");
+    File* fileRoot = NULL;
+
+    int choice;
+    string name;
+
+    do {
+        cout << "\n--- FILE MANAGEMENT SYSTEM ---";
+        cout << "\n1. Create Folder";
+        cout << "\n2. Display Folders";
+        cout << "\n3. Search Folder";
+        cout << "\n4. Delete Folder";
+        cout << "\n5. Add File";
+        cout << "\n6. Search File";
+        cout << "\n7. Display File Traversals";
+        cout << "\n8. Add Priority Task";
+        cout << "\n9. Execute Highest Priority Task";
+        cout << "\n0. Exit";
+        cout << "\nEnter choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                cout << "Enter Folder Name: ";
+                cin >> name;
+                createFolder(root, name);
+                break;
+
+            case 2:
+                displayTree(root);
+                break;
+
+            case 3:
+                cout << "Enter Folder Name: ";
+                cin >> name;
+                cout << (searchFolder(root, name) ?
+                    "Folder Found" : "Folder Not Found");
+                break;
+
+            case 4:
+                cout << "Enter Folder Name: ";
+                cin >> name;
+                cout << (deleteFolder(root, name) ?
+                    "Folder Deleted" : "Folder Not Found");
+                break;
+
+            case 5:
+                cout << "Enter File Name: ";
+                cin >> name;
+                fileRoot = insertFile(fileRoot, name);
+                cout << "File Added!\n";
+                break;
+
+            case 6:
+                cout << "Enter File Name: ";
+                cin >> name;
+                cout << (searchFile(fileRoot, name) ?
+                    "File Found" : "File Not Found");
+                break;
+
+            case 7:
+                cout << "\nPreorder: ";
+                preorder(fileRoot);
+                cout << "\nInorder: ";
+                inorder(fileRoot);
+                cout << "\nPostorder: ";
+                postorder(fileRoot);
+                cout << "\nLevel Order: ";
+                levelorder(fileRoot);
+                cout << endl;
+                break;
+
+            case 8: {
+                int priority;
+                cout << "Enter Task Priority: ";
+                cin >> priority;
+                tasks.push(priority);
+                cout << "Task Added!\n";
+                break;
+            }
+
+            case 9:
+                if (!tasks.empty()) {
+                    cout << "Highest Priority Task: "
+                         << tasks.top() << endl;
+                    tasks.pop();
+                } else {
+                    cout << "No Tasks Available!\n";
+                }
+                break;
+
+            case 0:
+                cout << "Exiting...";
+                break;
+
+            default:
+                cout << "Invalid Choice!";
+        }
+
+    } while (choice != 0);
+
+    return 0;
+}
