@@ -1,0 +1,163 @@
+
+#include <iostream>
+#include <list>
+#include <vector>
+using namespace std;
+
+struct Student {
+    int roll;
+    string name;
+    string course;
+};
+
+list<Student> students;
+vector<list<int>> hashTable(10);
+
+int hashFunction(int roll) {
+    return roll % 10;
+}
+
+void registerStudent() {
+    Student s;
+
+    cout << "Enter Roll Number: ";
+    cin >> s.roll;
+
+    for (auto x : students) {
+        if (x.roll == s.roll) {
+            cout << "Roll number already exists!\n";
+            return;
+        }
+    }
+
+    cout << "Enter Student Name: ";
+    cin >> s.name;
+    s.course = "Not Enrolled";
+
+    students.push_back(s);
+    hashTable[hashFunction(s.roll)].push_back(s.roll);
+
+    cout << "Student registered!\n";
+}
+
+void searchStudent() {
+    int roll;
+    cout << "Enter Roll Number: ";
+    cin >> roll;
+
+    for (int x : hashTable[hashFunction(roll)]) {
+        if (x == roll) {
+            for (auto s : students) {
+                if (s.roll == roll) {
+                    cout << "\nName: " << s.name
+                         << "\nCourse: " << s.course << endl;
+                    return;
+                }
+            }
+        }
+    }
+    cout << "Student not found!\n";
+}
+
+void updateStudent() {
+    int roll;
+    cout << "Enter Roll Number: ";
+    cin >> roll;
+
+    for (auto &s : students) {
+        if (s.roll == roll) {
+            cout << "Enter New Name: ";
+            cin >> s.name;
+            cout << "Student updated!\n";
+            return;
+        }
+    }
+    cout << "Student not found!\n";
+}
+
+void enrollStudent() {
+    int roll;
+    cout << "Enter Roll Number: ";
+    cin >> roll;
+
+    for (auto &s : students) {
+        if (s.roll == roll) {
+            cout << "Enter Course Name: ";
+            cin >> s.course;
+            cout << "Course enrollment successful!\n";
+            return;
+        }
+    }
+    cout << "Student not found!\n";
+}
+
+void withdrawCourse() {
+    int roll;
+    cout << "Enter Roll Number: ";
+    cin >> roll;
+
+    for (auto &s : students) {
+        if (s.roll == roll) {
+            s.course = "Not Enrolled";
+            cout << "Course withdrawn!\n";
+            return;
+        }
+    }
+    cout << "Student not found!\n";
+}
+
+void removeStudent() {
+    int roll;
+    cout << "Enter Roll Number: ";
+    cin >> roll;
+
+    for (auto it = students.begin(); it != students.end(); it++) {
+        if (it->roll == roll) {
+            students.erase(it);
+            hashTable[hashFunction(roll)].remove(roll);
+            cout << "Student record removed!\n";
+            return;
+        }
+    }
+    cout << "Student not found!\n";
+}
+
+void displayStudents() {
+    for (auto s : students) {
+        cout << "\nRoll Number: " << s.roll
+             << "\nName: " << s.name
+             << "\nCourse: " << s.course << endl;
+    }
+}
+
+int main() {
+    int choice;
+
+    do {
+        cout << "\n--- UNIVERSITY MANAGEMENT ---";
+        cout << "\n1. Register Student";
+        cout << "\n2. Update Student";
+        cout << "\n3. Enroll in Course";
+        cout << "\n4. Withdraw from Course";
+        cout << "\n5. Remove Student";
+        cout << "\n6. Display Students";
+        cout << "\n7. Search Student";
+        cout << "\n0. Exit";
+        cout << "\nEnter choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1: registerStudent(); break;
+            case 2: updateStudent(); break;
+            case 3: enrollStudent(); break;
+            case 4: withdrawCourse(); break;
+            case 5: removeStudent(); break;
+            case 6: displayStudents(); break;
+            case 7: searchStudent(); break;
+            case 0: cout << "Exiting..."; break;
+            default: cout << "Invalid choice!";
+        }
+    } while (choice != 0);
+
+    return 0;
+}
